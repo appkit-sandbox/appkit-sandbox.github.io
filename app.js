@@ -9,9 +9,9 @@ var db;
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js', { scope: '/'}).then(function (reg) {
     if (reg.installing) {
-      console.log('Service worker installing', navigator.serviceWorker.controller);
+      console.log('Service worker installing');
     } else if (reg.waiting) {
-      console.log('Service worker installed', navigator.serviceWorker.controller);
+      console.log('Service worker installed');
     } else if (reg.active) {
       console.log('Service worker active');
       //Gừi indentity qua SW
@@ -26,8 +26,7 @@ if ('serviceWorker' in navigator) {
 
   // When SW state change to active
   navigator.serviceWorker.addEventListener('controllerchange', async function () {
-    let res = await fetch("https://c1/css/style1.css");
-    console.log('Refreshing...', navigator.serviceWorker.controller, res);
+    console.log('ControllerChange...');
     appendOutput();
   });
 }
