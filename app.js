@@ -24,13 +24,13 @@ if ('serviceWorker' in navigator) {
     console.log('Registration failed with ' + error);
   });
 
-  let refreshing;
-  navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (refreshing) return;
-    window.location.reload();
-    refreshing = true;
-    console.log('Refreshing...');
-  });
+  // let refreshing;
+  // navigator.serviceWorker.addEventListener('controllerchange', function () {
+  //   if (refreshing) return;
+  //   window.location.reload();
+  //   refreshing = true;
+  //   console.log('Refreshing...');
+  // });
 }
 
 // if (!window.indexedDB) { };
@@ -112,16 +112,16 @@ if ('serviceWorker' in navigator) {
 //   }
 // };
 
-function addIfm() {
-  document.getElementById("ifm").innerHTML = '<iframe width="300" height="200" src="/output/?id=c1" frameborder="0"></iframe>';
-}
-function render(src) {
-  var ifrm = document.getElementById('ifm');
-  ifrm = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
-    ifrm.document.open();
-    ifrm.document.write(src);
-    ifrm.document.close();
-  }
+// function addIfm() {
+//   document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
+// }
+// function render(src) {
+//   var ifrm = document.getElementById('ifm');
+//   ifrm = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
+//     ifrm.document.open();
+//     ifrm.document.write(src);
+//     ifrm.document.close();
+//   }
 
 async function putFile(store, fileContent, fileName, preprocessor) {
   let content = fileContent;
@@ -136,7 +136,7 @@ async function putFile(store, fileContent, fileName, preprocessor) {
   await db.put(store, content, fileName);
 }
 window.onload = async function() {
-  setTimeout(function(){ addIfm(); }, 500);
+  // setTimeout(function(){ addIfm(); }, 500);
   //Write to iframe
   
   //First Init
