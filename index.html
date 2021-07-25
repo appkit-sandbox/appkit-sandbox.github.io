@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>Appkit Sandbox</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <script src="/libs/pug.js"></script>
+  </head>
+
+  <body>
+    <iframe id="ifm" width="400" height="600" src="/output/?id=c1" frameborder="1"></iframe>
+    <input id="fileName" type="text" value="/css/style3.css">
+    <textarea name="fileContent" id="fileContent" cols="30" rows="10">body { background: pink; }
+h2 { font-size: 30px; color: brown; }
+     </textarea>
+    <button id="addFile">Add file</button>
+    <button id="listFile">Update file</button>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
