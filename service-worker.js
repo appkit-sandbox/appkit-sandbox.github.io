@@ -8,17 +8,16 @@ self.addEventListener('install', function (event) {
     caches.open('v1').then(function (cache) {
       return cache.addAll([
         // '/',
-        // '/index.html',
+        '/index.html',
         '/style.css',
-        // '/app.js',
+        '/app.js',
+        '/lib/pug.js',
+        '/output/index.html',
+        '/images/appkit_avatar.png'
       ]);
     })
   );
 });
-
-self.addEventListener('error', function(e) {
-  console.log("LẮNG NGHE SỰ KIỆN LỖI", e.message);
-}, true);
 
 self.addEventListener('fetch', function (event) {
   // event.respondWith(caches.match(event.request).then(function(response) {

@@ -3,7 +3,7 @@ var idb=function(e){"use strict";let t,n;const r=new WeakMap,o=new WeakMap,s=new
 window.pug = require('pug'); //Register PUG compiler
 
 // register service worker
-const projectId = Math.random().toString(36).substring(7); //Random project id
+// const projectId = Math.random().toString(36).substring(7); //Random project id
 var db;
 
 if ('serviceWorker' in navigator) {
@@ -16,7 +16,7 @@ if ('serviceWorker' in navigator) {
     } else if (reg.active) {
       console.log('Service worker active');
       //Gừi indentity qua SW
-      navigator.serviceWorker.controller.postMessage({id: "test message"})
+      // navigator.serviceWorker.controller.postMessage({id: "test message"})
     }
     
   }).catch(function (error) {
