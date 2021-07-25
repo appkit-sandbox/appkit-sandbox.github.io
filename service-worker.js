@@ -4,6 +4,7 @@ let db;
 (async () => { db = await idb.openDB("user_1") })();
 
 self.addEventListener('install', function (event) {
+  self.skipWaiting();
   event.waitUntil(
     caches.open('v1').then((cache) => {
       return cache.addAll([
@@ -18,12 +19,12 @@ self.addEventListener('install', function (event) {
     })
   );
 });
-// self.addEventListener('activate', (event) => {
-//   console.info('Event: Activate');
-//   event.waitUntil(
-//       self.clients.claim()
-//   );
-// });
+self.addEventListener('activate', (event) => {
+  console.info('Event: Activate');
+  event.waitUntil(
+      self.clients.claim()
+  );
+});
 
 self.addEventListener('fetch', function (event) {
   // event.respondWith(caches.match(event.request).then(function(response) {

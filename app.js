@@ -5,14 +5,14 @@ window.pug = require('pug'); //Register PUG compiler
 // register service worker
 // const projectId = Math.random().toString(36).substring(7); //Random project id
 var db;
+let refreshing;
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js', { scope: '/'}).then(function (reg) {
     if (reg.installing) {
-      console.log('Service worker installing');
-      
+      console.log('Service worker installing', navigator.serviceWorker.controller);
     } else if (reg.waiting) {
-      console.log('Service worker installed');
+      console.log('Service worker installed', navigator.serviceWorker.controller);
     } else if (reg.active) {
       console.log('Service worker active');
       //Gừi indentity qua SW
@@ -24,13 +24,12 @@ if ('serviceWorker' in navigator) {
     console.log('Registration failed with ' + error);
   });
 
-  // let refreshing;
-  // navigator.serviceWorker.addEventListener('controllerchange', function () {
-  //   if (refreshing) return;
-  //   window.location.reload();
-  //   refreshing = true;
-  //   console.log('Refreshing...');
-  // });
+  // When SW state change to active
+  navigator.serviceWorker.addEventListener('controllerchange', async function () {
+    let res = await fetch("https://c1/css/style1.css");
+    console.log('Refreshing...', navigator.serviceWorker.controller, res);
+    document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
+  });
 }
 
 // if (!window.indexedDB) { };
