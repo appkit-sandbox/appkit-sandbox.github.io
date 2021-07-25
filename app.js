@@ -104,9 +104,9 @@ if ('serviceWorker' in navigator) {
 //   }
 // };
 
-// function addIfm() {
-//   document.getElementById("ifm").innerHTML = '<iframe width="300" height="200" src="/css/style1.css" frameborder="0"></iframe>';
-// }
+function addIfm() {
+  document.getElementById("ifm").innerHTML = '<iframe width="300" height="200" src="/output/?id=c1" frameborder="0"></iframe>';
+}
 function render(src) {
   var ifrm = document.getElementById('ifm');
   ifrm = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
@@ -128,7 +128,7 @@ async function putFile(store, fileContent, fileName, preprocessor) {
   await db.put(store, content, fileName);
 }
 window.onload = async function() {
-  // setTimeout(function(){ addIfm(); }, 200);
+  setTimeout(function(){ addIfm(); }, 500);
   //Write to iframe
   
   //First Init
