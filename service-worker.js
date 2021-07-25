@@ -4,7 +4,7 @@ let db;
 (async () => { db = await idb.openDB("user_1") })();
 
 self.addEventListener('install', function (event) {
-  event.waitUntil(
+  event.waitUntil(self.clients.claim(),
     caches.open('v1').then((cache) => {
       return cache.addAll([
         '/',
