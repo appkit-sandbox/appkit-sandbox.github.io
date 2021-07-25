@@ -5,7 +5,6 @@ window.pug = require('pug'); //Register PUG compiler
 // register service worker
 // const projectId = Math.random().toString(36).substring(7); //Random project id
 var db;
-let refreshing;
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js', { scope: '/'}).then(function (reg) {
@@ -17,6 +16,7 @@ if ('serviceWorker' in navigator) {
       console.log('Service worker active');
       //Gừi indentity qua SW
       // navigator.serviceWorker.controller.postMessage({id: "test message"})
+      appendOutput();
     }
     
   }).catch(function (error) {
@@ -28,7 +28,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', async function () {
     let res = await fetch("https://c1/css/style1.css");
     console.log('Refreshing...', navigator.serviceWorker.controller, res);
-    document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
+    appendOutput();
   });
 }
 
@@ -111,9 +111,10 @@ if ('serviceWorker' in navigator) {
 //   }
 // };
 
-// function addIfm() {
-//   document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
-// }
+function appendOutput() {
+  document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
+}
+
 // function render(src) {
 //   var ifrm = document.getElementById('ifm');
 //   ifrm = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
@@ -135,7 +136,7 @@ async function putFile(store, fileContent, fileName, preprocessor) {
   await db.put(store, content, fileName);
 }
 window.onload = async function() {
-  // setTimeout(function(){ addIfm(); }, 500);
+  // setTimeout(function(){ appendOutput(); }, 500);
   //Write to iframe
   
   //First Init
