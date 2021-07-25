@@ -114,7 +114,7 @@ async function modifyResponse(request) {
     filePath = url.replace(baseURL, "").split('?')[0].split('#')[0], // /bar/foo/filename.ext
     fileExt = filePath.split('.').pop(); //filename.ext
   
-  if (db.objectStoreNames.contains(hostname)) { //Check nếu hostname là id 1 table trong database
+  if (db && db.objectStoreNames.contains(hostname)) { //Check nếu hostname là id 1 table trong database
       let fileContent = await db.transaction(hostname).objectStore(hostname).get(filePath);
     if(typeof fileContent === "undefined") {
       console.log("CUSTOM DOMAIN: 404", request, fileExt, fileContent);
