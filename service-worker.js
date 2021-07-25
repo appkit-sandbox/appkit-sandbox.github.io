@@ -5,13 +5,13 @@ let db;
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
-    caches.open('v1').then(function (cache) {
+    caches.open('v1').then((cache) => {
       return cache.addAll([
-        // '/',
+        '/',
         '/index.html',
         '/style.css',
         '/app.js',
-        '/lib/pug.js',
+        '/libs/pug.js',
         '/output/index.html',
         '/images/appkit_avatar.png'
       ]);
@@ -55,7 +55,7 @@ self.addEventListener('fetch', function (event) {
   //     });
   //   }
   // }));
-  
+  console.log("REQUEST: ", event.request);
   event.respondWith(modifyResponse(event.request));
 });
 
