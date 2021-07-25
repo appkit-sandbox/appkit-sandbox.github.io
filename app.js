@@ -23,6 +23,14 @@ if ('serviceWorker' in navigator) {
     // registration failed
     console.log('Registration failed with ' + error);
   });
+
+  let refreshing;
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (refreshing) return;
+    window.location.reload();
+    refreshing = true;
+    console.log('Refreshing...');
+  });
 }
 
 // if (!window.indexedDB) { };
