@@ -18,6 +18,12 @@ self.addEventListener('install', function (event) {
     })
   );
 });
+self.addEventListener('activate', (event) => {
+  console.info('Event: Activate');
+  event.waitUntil(
+      self.clients.claim()
+  );
+});
 
 self.addEventListener('fetch', function (event) {
   // event.respondWith(caches.match(event.request).then(function(response) {
