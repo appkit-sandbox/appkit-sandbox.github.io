@@ -49,78 +49,25 @@ if ('serviceWorker' in navigator) {
       store.put('import { fn } from "./js2.js"; window.foo = "Xuan Hung"; console.log("Log tu ben trong ne!", foo); text.innerHTML = fn(foo);', '/js/js1.js');
       store.put('export function fn(t) { return "I was exported from JS2. My name is - " + t} ', '/js/js2.js');
       store.put(img, '/images/photo.png');
+      store.put('<!DOCTYPE html><html><head><link id="css1" href="/css/style1.css" rel="stylesheet"><script type="module" src="/js/js1.js"></script></head><body><h2>Title</h2> Hello <a href="/">baby</a>! <div id="text"></div><img src="/images/photo.png" alt="no_image" width="200" /></body></html>', '/index.html')
     }
   })
 })()
 
-
-// function for loading each image via XHR
-
-// function imgLoad(imgJSON) {
-//   // return a promise for an image loading
-//   return new Promise(function(resolve, reject) {
-//     var request = new XMLHttpRequest();
-//     request.open('GET', imgJSON.url);
-//     request.responseType = 'blob';
-
-//     request.onload = function() {
-//       if (request.status == 200) {
-//         var arrayResponse = [];
-//         arrayResponse[0] = request.response;
-//         arrayResponse[1] = imgJSON;
-//         resolve(arrayResponse);
-//       } else {
-//         reject(Error('Image didn\'t load successfully; error code:' + request.statusText));
-//       }
-//     };
-
-//     request.onerror = function() {
-//       reject(Error('There was a network error.'));
-//     };
-
-//     // Send the request
-//     request.send();
-//   });
-// }
-
-// var imgSection = document.querySelector('section');
-
-// window.onload = function() {
-
-//   // load each set of image, alt text, name and caption
-//   for(var i = 0; i<=Gallery.images.length-1; i++) {
-//     imgLoad(Gallery.images[i]).then(function(arrayResponse) {
-
-//       var myImage = document.createElement('img');
-//       var myFigure = document.createElement('figure');
-//       var myCaption = document.createElement('caption');
-//       var imageURL = window.URL.createObjectURL(arrayResponse[0]);
-
-//       myImage.src = imageURL;
-//       myImage.setAttribute('alt', arrayResponse[1].alt);
-//       myCaption.innerHTML = '<strong>' + arrayResponse[1].name + '</strong>: Taken by ' + arrayResponse[1].credit;
-
-//       imgSection.appendChild(myFigure);
-//       myFigure.appendChild(myImage);
-//       myFigure.appendChild(myCaption);
-
-//     }, function(Error) {
-//       console.log(Error);
-//     });
-//   }
-// };
-
 function appendOutput() {
-  document.getElementById("ifm").innerHTML = '<iframe width="400" height="600" src="/output/?id=c1" frameborder="0"></iframe>';
+  document.getElementById("ifm").innerHTML = '<iframe id="output" src="/view/?id=c1&path=/index.html"></iframe>';
+  let output = document.getElementById('output');
 }
 
-// function render(src) {
-//   var ifrm = document.getElementById('ifm');
-//   ifrm = ifrm.contentWindow || ifrm.contentDocument.document || ifrm.contentDocument;
-//     ifrm.document.open();
-//     ifrm.document.write(src);
-//     ifrm.document.close();
-//   }
+function render(src) {
+  if(src) {
+    src = src.replace("<head>", '<head><base href="https://c1/">');
+    let iframe = output.contentWindow || output.contentDocument.document || output.contentDocument;
+      iframe.document.open();
+      iframe.document.write(src);
+      iframe.document.close();
+  }
+}
 
 async function putFile(store, fileContent, fileName, preprocessor) {
   let content = fileContent;
@@ -149,6 +96,22 @@ window.onload = async function() {
     console.log("Nội dung file", fileName.value, fileContent.value);
     let fileExt = fileName.value.split(".").pop(); //get file extension
     if(fileExt !== "pug") fileExt = null;
-    putFile("c1", fileContent.value, fileName.value, fileExt);
+    putFile("c1", fileContent.value, fileName.value, fileExt);    
   }
+
+  listFile.onclick = async () => {
+    let flist = await db.transaction("c1").objectStore("c1").getAllKeys();
+    console.log("Danh sách file", flist);
+  }
+
+  go.onclick = async () => {
+    let output = document.getElementById('output');
+    let filePath = currentURL.value[0] == "/" ? currentURL.value : "/" + currentURL.value;
+    output.src= '/view/?id=c1&path=' + filePath;
+    // let fileContent = await db.transaction("c1").objectStore("c1").get(filePath);
+    console.log("Current URL:", filePath);
+    // // if (fileContent !== undefined) 
+    // render(fileContent, true);
+  }
+  
 }
