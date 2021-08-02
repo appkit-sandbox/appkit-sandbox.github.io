@@ -55,13 +55,13 @@ if ('serviceWorker' in navigator) {
 })()
 
 function appendOutput() {
-  document.getElementById("ifm").innerHTML = '<iframe id="output" src="/view/?id=c1&path=/index.html"></iframe>';
+  document.getElementById("ifm").innerHTML = '<iframe id="output" src="/c1/index.html"></iframe>'; //'<iframe id="output" src="/view/?id=c1&path=/index.html"></iframe>';
   let output = document.getElementById('output');
 }
 
 function render(src) {
   if(src) {
-    src = src.replace("<head>", '<head><base href="https://c1/">');
+    src = src.replace("<head>", '<head><base href="/c1/">');
     let iframe = output.contentWindow || output.contentDocument.document || output.contentDocument;
       iframe.document.open();
       iframe.document.write(src);
