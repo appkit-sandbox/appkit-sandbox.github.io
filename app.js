@@ -55,8 +55,13 @@ if ('serviceWorker' in navigator) {
 })()
 
 function appendOutput() {
-  document.getElementById("ifm").innerHTML = '<iframe id="output" src="/c1/index.html"></iframe>'; //'<iframe id="output" src="/view/?id=c1&path=/index.html"></iframe>';
+  document.getElementById("ifm").innerHTML = '<iframe sandbox="allow-same-origin allow-scripts allow-popups" id="output" src="/view/?id=c1&path=/index.html"></iframe>'; //'<iframe id="output" src="/c1/index.html?id=c1"></iframe>';
   let output = document.getElementById('output');
+  let iframeWindow = output.contentWindow || output.contentDocument.document || output.contentDocument;
+  iframeWindow.parent = null;
+  iframeWindow.onload = () => {
+    iframeWindow.history.pushState({}, '', window.location.origin + "/index.html#c3");
+  }
 }
 
 function render(src) {

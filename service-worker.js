@@ -72,8 +72,8 @@ self.addEventListener('fetch', function (event) {
 //   console.log('postMessage received:', evt.data);
 // });
 
-function createResponse(content, type) {
-  let header = new Headers([['Content-Type', type]]);
+function createResponse(content, type, custom = "") {
+  let header = new Headers([['Content-Type', type], ['X-Appkit', custom]]);
   return new Response(content, { headers: header });
 }
 function getContentType(extension) {
@@ -102,7 +102,7 @@ function getContentType(extension) {
 }
 
 async function modifyResponse(request) {
-  let response;
+  let response, newURL, newRequest, reservedPath = true;
   const url = request.url,
     hostname = url.split("/")[2],
     protocol = url.split("/")[0],
@@ -123,64 +123,99 @@ async function modifyResponse(request) {
       response = createResponse(fileContent, contentType);
     }
   } else {
-    //Default response
+    //Default response. Modify request header
+    // let ID = "";
+    // if(request.destination === "iframe") {
+    //   ID = request.url.split("?").pop().split("=").pop();
+    // }
+    // let requestHeader = { method: 'GET',
+    //            headers: {
+    //                'Content-Type': request.headers.get('Content-Type'),
+    //                'Sandbox-Id': ID,
+    //            },
+    //            mode: 'cors',
+    //            cache: 'default' };
+    // let fpath = filePath;
+    // if(!["/style.css", "/libs/pug.js", "/app.js", "/images/appkit_avatar.png", "/"].includes(filePath) ) {
+    //   fpath = "/c1" + filePath.replace('/c1', '');
+    //   reservedPath = false;
+    // }
+    
+    // newURL = self.origin + fpath;
+
+    // newRequest = new Request(newURL, requestHeader);
+
+    // console.log("TEST REQUEST", newRequest, newURL);
     response = await fetch(request);
   }
 
   if(url.includes(self.location.origin)) {
     console.log("REQUEST SAME ORIGIN");
     if (response.status == 404 || !response.ok) {
-      console.log(request);
-      if (url.includes("/")) {
-        let id = "c1",
-        path = filePath.replace("/c1", ""),
-        fileContent = await db.transaction(id).objectStore(id).get(path);
-        // response = await fetch('/index.html');
-        console.log("THOẢ C1", path);
+      console.log("404", request);
+      // let ID = null;
+      // if(request.destination === "iframe") {
+      //   ID = request.url.split("?").pop().split("=").pop();
+      // }
+      if (filePath === "/test/") {
+        response = await fetch('/index.html');
+      }
+      // if (url.includes("/c1")) {
+      //   let id = "c1",
+      //   path = filePath.replace("/c1", ""),
+      //   extension = path.includes(".") ? path.split('.').pop() : null,
+      //   fileContent = await db.transaction(id).objectStore(id).get(path);
+      //   // Nếu là các file html/htm/pug/jade
+      //     if(["html", "htm", "pug", "jade"].includes(extension)) {
+      //       fileContent = fileContent.replace("<head>", `<head><base href="/c1/">`);
+      //     }
+      //   // response = await fetch('/index.html');
+        
+      //   let contentType = fileContent instanceof Blob ? fileContent.type : getContentType(extension);
+      //   // console.log("THOẢ C1", path, contentType, ID);
+      //   response = createResponse(fileContent, contentType, ID);
+      // } else
+      if (url.includes("/view/?id=") && urlParams.id) {
+        let id = urlParams.id,
+            path = urlParams.path[0] == "/" ? urlParams.path : "/" + urlParams.path,
+            extension = path.includes(".") ? path.split('.').pop() : null,
+            isFolder = path[path.length - 1] == "/" || !extension ? true : false, //Nếu không có extension hoặc kết thúc là / thì là folder
+            fileList = await db.transaction(id).objectStore(id).getAllKeys(),
+            fileContent = "";
+
+        if(fileList.includes(path)) {
+          fileContent = await db.transaction(id).objectStore(id).get(path);
+          //Nếu là các file html/htm/pug/jade
+          if(["html", "htm", "pug", "jade"].includes(extension)) {
+            fileContent = fileContent.replace("<head>", `<head><base href="https://${id}/">`);
+          }
+        }else{
+          if(path[path.length - 1] !== "/") path+="/";
+          let list = '';
+          fileList.forEach(p => {
+            if(p.includes(path)) { list+= `<p><a href="/view/?id=${id}&path=${p}">${p.replace(path, "")}</a></p>`; }
+          });
+          if(list.length > 0) {
+            //Có thư mục thì check file index
+            let checkPath1 = path + "index.html",
+              checkPath2 = path + "index.htm",
+              newPath = fileList.includes(checkPath1) ? checkPath1 : (fileList.includes(checkPath2) ? checkPath2 : null);
+            if(newPath) {
+              //Nếu có file index
+              let htmlFile = await db.transaction(id).objectStore(id).get(newPath);
+              fileContent = htmlFile.replace("<head>", `<head><base href="https://${id}/">`);
+            }else{
+              //Nếu không có file index thì list các file còn lại
+              fileContent = `<h3>${path}</h3><br> This folder doesn't have the default index.html file<br> ${list}`;
+            }
+          }else{
+            //Không tồn tại file/folder
+            fileContent = isFolder ? `<h3>${path}</h3><br> Folder not found.` : `<h3>${path.slice(0, -1)}</h3><br> File not found.`;
+          }
+        }
         let contentType = fileContent instanceof Blob ? fileContent.type : "text/html";
         response = createResponse(fileContent, contentType);
       }
-      // else if (url.includes("/view/?id=") && urlParams.id) {
-      //   let id = urlParams.id,
-      //       path = urlParams.path[0] == "/" ? urlParams.path : "/" + urlParams.path,
-      //       extension = path.includes(".") ? path.split('.').pop() : null,
-      //       isFolder = path[path.length - 1] == "/" || !extension ? true : false, //Nếu không có extension hoặc kết thúc là / thì là folder
-      //       fileList = await db.transaction(id).objectStore(id).getAllKeys(),
-      //       fileContent = "";
-
-      //   if(fileList.includes(path)) {
-      //     fileContent = await db.transaction(id).objectStore(id).get(path);
-      //     //Nếu là các file html/htm/pug/jade
-      //     if(["html", "htm", "pug", "jade"].includes(extension)) {
-      //       fileContent = fileContent.replace("<head>", `<head><base href="https://${id}/">`);
-      //     }
-      //   }else{
-      //     if(path[path.length - 1] !== "/") path+="/";
-      //     let list = '';
-      //     fileList.forEach(p => {
-      //       if(p.includes(path)) { list+= `<p><a href="/view/?id=${id}&path=${p}">${p.replace(path, "")}</a></p>`; }
-      //     });
-      //     if(list.length > 0) {
-      //       //Có thư mục thì check file index
-      //       let checkPath1 = path + "index.html",
-      //         checkPath2 = path + "index.htm",
-      //         newPath = fileList.includes(checkPath1) ? checkPath1 : (fileList.includes(checkPath2) ? checkPath2 : null);
-      //       if(newPath) {
-      //         //Nếu có file index
-      //         let htmlFile = await db.transaction(id).objectStore(id).get(newPath);
-      //         fileContent = htmlFile.replace("<head>", `<head><base href="https://${id}/">`);
-      //       }else{
-      //         //Nếu không có file index thì list các file còn lại
-      //         fileContent = `<h3>${path}</h3><br> This folder doesn't have the default index.html file<br> ${list}`;
-      //       }
-      //     }else{
-      //       //Không tồn tại file/folder
-      //       fileContent = isFolder ? `<h3>${path}</h3><br> Folder not found.` : `<h3>${path.slice(0, -1)}</h3><br> File not found.`;
-      //     }
-      //   }
-      //   let contentType = fileContent instanceof Blob ? fileContent.type : "text/html";
-      //   response = createResponse(fileContent, contentType);
-      // }
     }
   }
   
