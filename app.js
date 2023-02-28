@@ -54,15 +54,22 @@ if ('serviceWorker' in navigator) {
   })
 })()
 
-function appendOutput() {
-  document.getElementById("ifm").innerHTML = '<iframe sandbox="allow-same-origin allow-scripts allow-popups" id="output" src="/view/?id=c1&path=/index.html"></iframe>'; //'<iframe id="output" src="/c1/index.html?id=c1"></iframe>';
+window.onloadIframe = () => {
   let output = document.getElementById('output');
   let iframeWindow = output.contentWindow || output.contentDocument.document || output.contentDocument;
   iframeWindow.parent = null;
-  iframeWindow.onload = () => {
-    iframeWindow.history.pushState({}, '', window.location.origin + "/index.html#c3");
+  let filePath = currentURL.value[0] == "/" ? currentURL.value : "/" + currentURL.value;
+  iframeWindow.history.replaceState({}, '', window.location.origin + filePath);
+
+  iframeWindow.onpopstate = function(event) {
+    console.log(`location: ${iframeWindow.document.location}, state: ${JSON.stringify(event.state)}`);
   }
 }
+
+function appendOutput() {
+  document.getElementById("ifm").innerHTML = `<iframe onload="onloadIframe();" sandbox="allow-same-origin allow-scripts allow-popups" id="output" src="/view/?id=c1&path=/index.html"></iframe>`; //'<iframe id="output" src="/c1/index.html?id=c1"></iframe>';
+}
+
 
 function render(src) {
   if(src) {
